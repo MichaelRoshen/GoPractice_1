@@ -52,12 +52,30 @@ func readValues(infile string) (values []int, err error) {
 	return
 }
 
+func writeValues(values []int, outfile string) error {
+	file, err := os.Create(outfile)
+	if err != nil {
+		fmt.Println("Failed to create the output file ", outfile)
+		return err
+	}
+
+	defer file.Close()
+
+	for _, value := range values {
+		str := strconv.Itoa(value)
+		file.WriteString(str + "\n")
+	}
+	return nil
+
+}
+
 func main() {
 	flag.Parse()
 	if infile != nil {
 		fmt.Println("infile = ", *infile, "outfile = ", *outfile, "algorithm = ", *algorithm)
 	}
 	values, err := readValues(*infile)
+	writeValues(values, "sorted.dat")
 	if err == nil {
 		fmt.Println("Read values:", values)
 	} else {
