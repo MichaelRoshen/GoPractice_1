@@ -1,17 +1,20 @@
 package main
 
 import (
+	"algorithms/bubblesort"
+	"algorithms/qsort"
 	"bufio" //bufio 包实现了带缓存的 I/O 操作
 	"flag"  //解析命令行参数
 	"fmt"
 	"io" //Reader和Writer接口
 	"os"
 	"strconv" //与字符串相关的类型转换都是通过 strconv 包实现的
+	"time"
 )
 
 var infile *string = flag.String("i", "infile", "File contains values for sorting")
 var outfile *string = flag.String("o", "outfile", "File to receive sorted values")
-var algorithm *string = flag.String("a", "qsort", "Sort algorithm")
+var algorithms *string = flag.String("a", "qsort", "Sort algorithm")
 
 func readValues(infile string) (values []int, err error) {
 	file, err := os.Open(infile)
@@ -72,12 +75,25 @@ func writeValues(values []int, outfile string) error {
 func main() {
 	flag.Parse()
 	if infile != nil {
-		fmt.Println("infile = ", *infile, "outfile = ", *outfile, "algorithm = ", *algorithm)
+		fmt.Println("infile = ", *infile, "outfile = ", *outfile, "algorithms = ", *algorithms)
 	}
+
 	values, err := readValues(*infile)
-	writeValues(values, "sorted.dat")
 	if err == nil {
 		fmt.Println("Read values:", values)
+		t1 := time.Now()
+		switch *algorithms {
+		case "qsort":
+			qsort.QuickSort(values)
+		case "bubblesort":
+			bubblesort.BubbleSort(values)
+		default:
+			fmt.Println("Sorting algorithms", *algorithms, "is  either unknown or unsupported")
+		}
+		t2 := time.Now()
+		fmt.Println("the sorting procsss costs", t2.Sub(t1), "to complete!")
+		writeValues(values, *outfile)
+
 	} else {
 		fmt.Println(err)
 	}
